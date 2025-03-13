@@ -1,10 +1,9 @@
-import { useState } from 'react'
-import './App.css'
-import '@chatscope/chat-ui-kit-styles/dist/default/styles.min.css';
-import { MainContainer, ChatContainer, MessageList, Message, MessageInput, TypingIndicator } from '@chatscope/chat-ui-kit-react';
+import { useState } from 'react';
+import './App.css';
 
 // Your API key remains unchanged
 const API_KEY = import.meta.env.VITE_OPENAI_API_KEY;
+
 // Adjusted system message to ensure chatbot responds only about Indian law and the Constitution
 const systemMessage = {
   "role": "system", 
@@ -15,8 +14,6 @@ const systemMessage = {
   Always respond directly to the question asked, and provide concise, to-the-point answers. 
   Maintain the context throughout the conversation, storing relevant details to make sure your responses remain accurate and relevant to the ongoing discussion.`
 }
-
-
 
 // Helper function to add a delay
 const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
@@ -52,10 +49,7 @@ async function processMessageToChatGPT(chatMessages, setMessages, setIsTyping) {
 
       const data = await response.json();
 
-      console.log('API Response:', data); // Log the entire API response for debugging
-
       if (response.status === 429) {
-        console.log("Rate limit hit. Retrying...");
         await delay(retryDelay);
         retryAttempts -= 1;
         continue;
@@ -64,10 +58,6 @@ async function processMessageToChatGPT(chatMessages, setMessages, setIsTyping) {
       if (data.choices && data.choices[0] && data.choices[0].message) {
         let chatGptResponse = data.choices[0].message.content;
 
-        // Log the response to check its content
-        console.log('ChatGPT Response:', chatGptResponse);
-
-        // If the response doesn't match the expected criteria, modify it
         if (!chatGptResponse.toLowerCase().includes("indian law") && !chatGptResponse.toLowerCase().includes("constitution of india")) {
           chatGptResponse = "I'm sorry, I can only discuss topics related to Indian law and the Constitution of India.";
         }
@@ -87,7 +77,6 @@ async function processMessageToChatGPT(chatMessages, setMessages, setIsTyping) {
       return;
 
     } catch (error) {
-      console.error("Error:", error);
       setMessages([...chatMessages, {
         message: "An error occurred while communicating with the API.",
         sender: "ChatGPT"
@@ -103,7 +92,6 @@ async function processMessageToChatGPT(chatMessages, setMessages, setIsTyping) {
   }]);
   setIsTyping(false);
 }
-
 
 function App() {
   const [messages, setMessages] = useState([
@@ -126,30 +114,51 @@ function App() {
     
     setMessages(newMessages);
 
-    // Initial system message to determine ChatGPT functionality
     setIsTyping(true);
     await processMessageToChatGPT(newMessages, setMessages, setIsTyping);
   };
 
   return (
     <div className="App">
-      <div style={{ position:"relative", height: "800px", width: "700px"  }}>
-        <MainContainer>
-          <ChatContainer>       
-            <MessageList 
-              scrollBehavior="smooth" 
-              typingIndicator={isTyping ? <TypingIndicator content="BharatNyay is typing" /> : null}
-            >
-              {messages.map((message, i) => {
-                return <Message key={i} model={message} />
-              })}
-            </MessageList>
-            <MessageInput placeholder="Type message here" onSend={handleSend} />        
-          </ChatContainer>
-        </MainContainer>
+      <div className="chat-container">
+        <div className="messages-container">
+          {messages.map((message, i) => {
+            const isChatGPT = message.sender === "ChatGPT";
+            return (
+              <div key={i} className={`message ${isChatGPT ? 'chatgpt' : 'user'}`}>
+                {message.message}
+              </div>
+            );
+          })}
+        </div>
+
+        {isTyping && <div className="typing-indicator">BharatNyay is typing...</div>}
+
+        <div className="input-container">
+          <input
+            type="text"
+            className="input-field"
+            placeholder="Type your message here"
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && e.target.value.trim() !== "") {
+                handleSend(e.target.value);
+                e.target.value = "";
+              }
+            }}
+          />
+          <button className="send-button" onClick={() => {
+            const input = document.querySelector('.input-field');
+            if (input && input.value.trim() !== "") {
+              handleSend(input.value);
+              input.value = "";
+            }
+          }}>
+            Send
+          </button>
+        </div>
       </div>
     </div>
-  )
+  );
 }
 
 export default App;
