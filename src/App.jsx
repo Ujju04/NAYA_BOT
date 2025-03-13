@@ -5,7 +5,6 @@ import { MainContainer, ChatContainer, MessageList, Message, MessageInput, Typin
 
 // Your API key remains unchanged
 const API_KEY = import.meta.env.VITE_OPENAI_API_KEY;
-
 // Adjusted system message to ensure chatbot responds only about Indian law and the Constitution
 const systemMessage = {
   "role": "system", 
@@ -22,8 +21,8 @@ const systemMessage = {
 // Helper function to add a delay
 const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
+// Retry mechanism with delay
 async function processMessageToChatGPT(chatMessages, setMessages, setIsTyping) {
- 
   let apiMessages = chatMessages.map((messageObject) => {
     let role = messageObject.sender === "ChatGPT" ? "assistant" : "user";
     return { role: role, content: messageObject.message };
@@ -32,8 +31,8 @@ async function processMessageToChatGPT(chatMessages, setMessages, setIsTyping) {
   const apiRequestBody = {
     model: "gpt-3.5-turbo",
     messages: [
-      systemMessage,
-      ...apiMessages
+      systemMessage, 
+      ...apiMessages 
     ]
   };
 
@@ -45,7 +44,7 @@ async function processMessageToChatGPT(chatMessages, setMessages, setIsTyping) {
       const response = await fetch("https://api.openai.com/v1/chat/completions", {
         method: "POST",
         headers: {
-          "Authorization": `Bearer ${API_KEY}`,
+          "Authorization": "Bearer " + API_KEY,
           "Content-Type": "application/json"
         },
         body: JSON.stringify(apiRequestBody)
@@ -53,9 +52,7 @@ async function processMessageToChatGPT(chatMessages, setMessages, setIsTyping) {
 
       const data = await response.json();
 
-      // Log the response data for debugging
-      console.log("Response Data:", data);
-      console.log("Response Status:", response.status);
+      console.log('API Response:', data); // Log the entire API response for debugging
 
       if (response.status === 429) {
         console.log("Rate limit hit. Retrying...");
@@ -67,9 +64,12 @@ async function processMessageToChatGPT(chatMessages, setMessages, setIsTyping) {
       if (data.choices && data.choices[0] && data.choices[0].message) {
         let chatGptResponse = data.choices[0].message.content;
 
-        // Ensure response is related to Indian law
-        if (!chatGptResponse.toLowerCase().includes("indian law")) {
-          chatGptResponse = "I'm sorry, I can only discuss topics related to Indian law.";
+        // Log the response to check its content
+        console.log('ChatGPT Response:', chatGptResponse);
+
+        // If the response doesn't match the expected criteria, modify it
+        if (!chatGptResponse.toLowerCase().includes("indian law") && !chatGptResponse.toLowerCase().includes("constitution of india")) {
+          chatGptResponse = "I'm sorry, I can only discuss topics related to Indian law and the Constitution of India.";
         }
 
         setMessages([...chatMessages, {
@@ -85,14 +85,11 @@ async function processMessageToChatGPT(chatMessages, setMessages, setIsTyping) {
 
       setIsTyping(false);
       return;
+
     } catch (error) {
-      console.error("Error during API call:", error);
-
-      // Log the error object
-      console.log("Error Details:", error);
-
+      console.error("Error:", error);
       setMessages([...chatMessages, {
-        message: `An error occurred while communicating with the API: ${error.message}`,
+        message: "An error occurred while communicating with the API.",
         sender: "ChatGPT"
       }]);
       setIsTyping(false);
