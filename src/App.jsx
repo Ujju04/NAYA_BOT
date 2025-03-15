@@ -37,11 +37,15 @@ async function processMessageToChatGPT(chatMessages, setMessages, setIsTyping) {
     ]
   };
 
+  console.log("API Request Body:", JSON.stringify(apiRequestBody)); // Log request body
+
   let retryAttempts = 5;
   let retryDelay = 5000;
 
   while (retryAttempts > 0) {
     try {
+      console.log(`Attempting API call... Attempt #${6 - retryAttempts}`); // Log retry attempts
+
       const response = await fetch("https://api.openai.com/v1/chat/completions", {
         method: "POST",
         headers: {
@@ -52,6 +56,7 @@ async function processMessageToChatGPT(chatMessages, setMessages, setIsTyping) {
       });
 
       const data = await response.json();
+      console.log("API Response:", data); // Log the API response
 
       if (response.status === 429) {
         await delay(retryDelay);
@@ -71,6 +76,7 @@ async function processMessageToChatGPT(chatMessages, setMessages, setIsTyping) {
           sender: "ChatGPT"
         }]);
       } else {
+        console.error('Invalid Response:', data); // Log invalid responses
         setMessages([...chatMessages, {
           message: "Sorry, I couldn't understand the response.",
           sender: "ChatGPT"
@@ -81,6 +87,7 @@ async function processMessageToChatGPT(chatMessages, setMessages, setIsTyping) {
       return;
 
     } catch (error) {
+      console.error('Request Error:', error); // Log any errors in the request
       setMessages([...chatMessages, {
         message: "An error occurred while communicating with the API.",
         sender: "ChatGPT"
