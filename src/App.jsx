@@ -4,6 +4,9 @@ import './App.css';
 // Your API key remains unchanged
 const API_KEY = import.meta.env.VITE_OPENAI_API_KEY;
 
+console.log(import.meta.env.VITE_OPENAI_API_KEY); // Make sure this is defined
+
+
 // Adjusted system message to ensure chatbot responds only about Indian law and the Constitution
 const systemMessage = {
   "role": "system", 
