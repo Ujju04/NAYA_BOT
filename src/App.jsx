@@ -3,6 +3,7 @@ import './App.css';
 
 // Your API key remains unchanged
 const API_KEY = import.meta.env.VITE_OPENAI_API_KEY;
+console.log("hello"); // Make sure this is defined
 
 console.log(import.meta.env.VITE_OPENAI_API_KEY); // Make sure this is defined
 
