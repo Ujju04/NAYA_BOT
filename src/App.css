@@ -1,100 +1,42 @@
-/* General Styles */
-body {
-  font-family: 'Inter', sans-serif;
-  margin: 0;
-  background-color: #242424;
-  color: #fff;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  overflow: hidden;
-}
-
-.App {
-  width: 100%;
-  max-width: 700px;
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
   padding: 2rem;
   text-align: center;
 }
 
-.chat-container {
-  width: 100%;
-  height: 80vh;
-  background-color: #fff; /* Change the background color of the chat container to white */
-  border-radius: 10px;
-  display: flex;
-  flex-direction: column;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Light shadow to give a soft effect */
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
 }
 
-.messages-container {
-  flex: 1;
-  padding: 1rem;
-  overflow-y: auto;
-  background-color: #fafafa; /* Light grey background for the message area */
-  border-bottom: 1px solid #ccc; /* Light border to separate the message area from input */
-  border-top-left-radius: 10px;
-  border-top-right-radius: 10px;
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
-.message {
-  margin-bottom: 1rem;
-  padding: 10px;
-  border-radius: 8px;
-  max-width: 80%;
-  word-wrap: break-word;
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
 }
 
-.message.chatgpt {
-  background-color: #e1e1e1; /* Light grey for ChatGPT messages */
-  color: #333;
-  align-self: flex-start;
+.card {
+  padding: 2em;
 }
 
-.message.user {
-  background-color: #007bff; /* Blue background for user messages */
-  color: white;
-  align-self: flex-end;
-}
-
-.typing-indicator {
-  text-align: center;
-  font-style: italic;
+.read-the-docs {
   color: #888;
-}
-
-.input-container {
-  display: flex;
-  align-items: center;
-  padding: 0.5rem;
-  background-color: #f1f1f1; /* Light background for the input area */
-  border-bottom-left-radius: 10px;
-  border-bottom-right-radius: 10px;
-}
-
-.input-field {
-  width: 80%;
-  padding: 10px;
-  border-radius: 5px;
-  border: 1px solid #ccc;
-  background-color: #fff;
-  color: #333;
-  font-size: 1rem;
-}
-
-.send-button {
-  padding: 10px 15px;
-  margin-left: 10px;
-  background-color: #007bff;
-  border: none;
-  border-radius: 5px;
-  color: white;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-.send-button:hover {
-  background-color: #0056b3;
 }

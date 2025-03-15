@@ -1,0 +1,40 @@
+name: Build and Deploy React App
+
+on:
+  push:
+    branches:
+      - main  # Trigger the workflow on pushes to the 'main' branch
+
+jobs:
+  build:
+    runs-on: ubuntu-latest  # The runner type (use ubuntu in this example)
+
+    steps:
+      # Step 1: Checkout the code from the repository
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      # Step 2: Set up Node.js
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16'  # Specify Node.js version
+
+      # Step 3: Set environment variable for OpenAI API key (VITE_ prefix for Vite)
+      - name: Set up VITE_OPENAI_API_KEY
+        env:
+          VITE_OPENAI_API_KEY: ${{ secrets.VITE_OPENAI_API_KEY }}  # GitHub secret
+        run: |
+          echo "VITE_OPENAI_API_KEY=${{ secrets.VITE_OPENAI_API_KEY }}" >> $GITHUB_ENV  # Ensure it's available as an environment variable
+
+      # Step 4: Install dependencies
+      - name: Install dependencies
+        run: npm install
+
+      # Step 5: Build the React app
+      - name: Build the app
+        run: npm run build
+
+      # Step 6: Deploy the app (or whatever you need to do with the build artifacts)
+      - name: Deploy the app
+        run: npm run deploy  # Replace with your actual deploy script
